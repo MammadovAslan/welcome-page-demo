@@ -1,13 +1,22 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" data-theme="cupcake">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div id="app"></div>
+    <div data-slide="slide" class="slide">
+      <div class="slide-items"></div>
+
+      <nav class="slide-nav">
+        <div class="slide-thumb"></div>
+        <button class="slide-prev">Previous</button>
+        <button class="slide-next">Next</button>
+      </nav>
+    </div>
     <script type="module" src="/main.js"></script>
   </body>
 </html>
