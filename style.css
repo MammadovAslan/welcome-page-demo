@@ -33,11 +33,8 @@ img {
 .slide {
   position: relative;
   height: 100%;
-
   aspect-ratio: 1 / 2;
-  /* margin: 20px auto; */
   display: grid;
-  padding: 00px 0;
 }
 
 @media (max-width: 460px) {
@@ -50,6 +47,21 @@ img {
   position: relative;
   grid-area: 1/1;
   overflow: hidden;
+}
+
+.slide-container {
+  height: 100%;
+}
+
+.slide-text {
+  position: absolute;
+  top: 50px;
+  right: 10px;
+  left: 10px;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #fff;
 }
 
 .slide-items img,
@@ -91,6 +103,7 @@ img {
   border: none;
   width: 50%;
 }
+
 .slide-nav button:hover {
   opacity: 1;
 }
@@ -108,7 +121,7 @@ img {
 .slide-thumb > span {
   flex: 1;
   display: block;
-  height: 6px;
+  height: 3px;
   background: #afafaf;
   margin: 3px;
   cursor: pointer;
@@ -182,6 +195,20 @@ img {
   min-width: 12rem;
 }
 
+.success-modal {
+  width: 14rem;
+  padding-bottom: 3rem;
+  border-radius: 16px;
+}
+
+.store-link {
+  width: 12rem;
+  background-color: #111;
+  display: flex;
+  justify-content: center;
+  border-radius: 12px;
+}
+
 .modal-text {
   font-size: 20px;
 }
@@ -193,13 +220,16 @@ img {
   border-radius: 5px;
 }
 #modal-input,
-#modal-submit {
+#modal-submit,
+#close-modal-btn {
   border-radius: 8px;
   border: none;
   padding: 1rem;
+  font-weight: 500;
 }
 
-#modal-submit {
+#modal-submit,
+#close-modal-btn {
   cursor: pointer;
   background: linear-gradient(108deg, rgba(239, 183, 16, 1) 0%, rgba(252, 35, 114, 1) 100%);
   color: #fff;
@@ -209,7 +239,12 @@ img {
   transform-origin: center; /* Add this line to set the scaling origin to the center of the button */
 }
 
-#modal-submit:active {
+#close-modal-btn {
+  padding: 1rem 2rem;
+}
+
+#modal-submit:active,
+#close-modal-btn:active {
   transform: scale(0.95);
 }
 
@@ -228,6 +263,6 @@ img {
   }
   100% {
     opacity: 1;
-    top: 14rem;
+    top: 16rem;
   }
 }

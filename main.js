@@ -42,18 +42,19 @@ class SlideStories {
 
     this.items.forEach((item, idx) => {
       item.classList.toggle("active", idx === index);
+      const child = item.firstChild;
       if (idx === index) {
-        if (item.tagName === "VIDEO") {
-          item.autoplay = true;
-          item.currentTime = 0;
-          item.play().catch((error) => {
+        if (child.tagName === "VIDEO") {
+          child.autoplay = true;
+          child.currentTime = 0;
+          child.play().catch((error) => {
             console.log("Autoplay failed:", error);
           });
         }
       } else {
-        if (item.tagName === "VIDEO") {
-          item.autoplay = false;
-          item.pause();
+        if (child.tagName === "VIDEO") {
+          child.autoplay = false;
+          child.pause();
         }
       }
     });
@@ -105,12 +106,12 @@ class SlideStories {
 
   autoSlide() {
     clearTimeout(this.timeout);
-    const activeItem = this.items[this.active];
+    const activeItem = this.items[this.active].firstChild;
     const arr = [...this.items];
     const isLastSlide = arr.indexOf(activeItem) === arr.length - 1;
 
     //if slide item is vedio, it will stay visible untill the end of the video
-    if (activeItem.tagName === "VIDEO" && activeItem.classList.contains("active")) {
+    if (activeItem.tagName === "VIDEO" && activeItem.parentElement.classList.contains("active")) {
       this.timeout = !isLastSlide && setTimeout(this.next.bind(this), activeItem.duration * 1000);
       this.animateThumb(activeItem.duration);
     } else {
@@ -132,33 +133,17 @@ class SlideStories {
     }
   }
 
-  playVideo() {
-    const activeItem = this.items[this.active];
-    if (activeItem.tagName === "VIDEO" && activeItem.paused) {
-      activeItem.play().catch((error) => {
-        console.log("Autoplay failed:", error);
-      });
-    }
-  }
-
-  stopVideo() {
-    const videos = this.slide.querySelectorAll("video");
-    videos.forEach((video) => {
-      if (!video.paused) {
-        video.pause();
-      }
-    });
-  }
-
   //*append story depending of media type
   appendStory(story) {
     const slideItems = this.slide.querySelector(".slide-items");
+    const slideContainer = document.createElement("div");
+    slideContainer.classList.add("slide-container");
 
     if (story.type === "image") {
       const imageElement = document.createElement("img");
       imageElement.src = story.src;
       imageElement.alt = `Image ${this.items.length + 1}`;
-      slideItems.appendChild(imageElement);
+      slideContainer.append(imageElement);
     } else if (story.type === "video") {
       const videoElement = document.createElement("video");
       const source = document.createElement("source");
@@ -166,13 +151,26 @@ class SlideStories {
 
       videoElement.autoplay = true;
       videoElement.playsinline = true;
+      // videoElement.muted = 'muted';
 
       videoElement.append(source);
-      slideItems.appendChild(videoElement);
+      slideContainer.append(videoElement);
     }
+    const text = document.createElement("p");
+    text.classList.add("slide-text");
+    text.innerHTML = story.text;
+    slideContainer.append(text);
+    slideItems.append(slideContainer);
 
     this.items = this.slide.querySelectorAll(".slide-items > *");
     this.addThumbItem();
+  }
+
+  closeModal() {
+    const successModal = this.slide.querySelector(".success-modal");
+    if (successModal) {
+      successModal.remove();
+    }
   }
 
   //*shows modal window on last slide
@@ -187,7 +185,16 @@ class SlideStories {
         "success-modal",
         `
         <img src="./assets/icons/smile.png" alt="Cool" />
-        <p>Спасибо за подписку, добро пожаловать!</p>
+        <h2>Позлравляем!</h2>
+        <p>Вы успешно присоедилились к FANZOONE</p>
+        <a href="#" class="store-link">
+          <img src="./assets/icons/google.png" alt="Cool" />
+        </a>
+        <a href="#" class="store-link">
+          <img src="./assets/icons/apple.png" alt="Cool" />
+        </a>
+        <button id="close-modal-btn">Закрыть</button>
+
       `
       );
 
@@ -213,11 +220,11 @@ class SlideStories {
 
           this.modal.classList.remove("active");
           this.slide.appendChild(successModal);
-
-          setTimeout(() => {
-            successModal.remove();
-            this.modal.classList.remove("active");
-          }, 2000);
+          const closeModalButton = successModal.querySelector("#close-modal-btn");
+          closeModalButton.addEventListener("click", () => {
+            this.closeModal();
+          });
+          // this.modal.classList.remove("active");
         } catch (error) {
           // Show error modal
           this.modal.classList.remove("active");
@@ -251,18 +258,22 @@ class SlideStories {
       {
         type: "image",
         src: "./assets/images/pexels-photo-799443.jpeg",
+        text: "Lorem ipsum sacramentum noto narum nefarius",
       },
       {
         type: "image",
         src: "./assets/images/pexels-todd-trapani-1535162.jpg",
+        text: "Lorem ipsum sacramentum noto narum nefarius",
       },
       {
         type: "video",
         src: "./assets/video/5922551.mp4",
+        text: "Lorem ipsum sacramentum noto narum nefarius",
       },
       {
         type: "video",
         src: "./assets/video/133640 (720p).mp4",
+        text: "Lorem ipsum sacramentum noto narum nefarius",
       },
     ];
 
