@@ -165,6 +165,7 @@ class SlideStories {
       source.src = story.src;
 
       videoElement.autoplay = true;
+      videoElement.playsinline = true;
 
       videoElement.append(source);
       slideItems.appendChild(videoElement);
