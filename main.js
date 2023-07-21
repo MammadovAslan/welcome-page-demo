@@ -3,11 +3,8 @@ class SlideStories {
     this.slide = document.querySelector(`[data-slide=${id}]`);
     this.active = 0;
     this.thumb = this.slide.querySelector(".slide-thumb");
-    this.isInteracted = false;
     this.init();
-
-    this.slide.addEventListener("mousedown", this.handleMouseDown.bind(this));
-    this.slide.addEventListener("mouseup", this.handleMouseUp.bind(this));
+    this.modal = this.slide.querySelector(".modal");
 
     document.addEventListener("keydown", this.handleArrowKeys.bind(this));
 
@@ -21,22 +18,6 @@ class SlideStories {
     });
   }
 
-  handleMouseDown() {
-    const activeItem = this.items[this.active];
-    if (activeItem.tagName === "VIDEO" && !activeItem.paused) {
-      activeItem.pause();
-    }
-  }
-
-  handleMouseUp() {
-    const activeItem = this.items[this.active];
-    if (activeItem.tagName === "VIDEO" && activeItem.paused) {
-      activeItem.play().catch((error) => {
-        console.log("Autoplay failed:", error);
-      });
-    }
-  }
-
   handleArrowKeys(event) {
     if (event.key === "ArrowLeft") {
       this.prev();
@@ -47,6 +28,15 @@ class SlideStories {
 
   activeSlide(index) {
     this.active = index;
+    const isLastSlide = index === this.items.length - 1;
+    //shows modal on last slide
+
+    if (this.modal && this.modal.classList.contains("active")) {
+      this.modal.classList.remove("active");
+    }
+
+    isLastSlide && this.showLastSlideModal();
+
     this.items.forEach((item, idx) => {
       item.classList.toggle("active", idx === index);
       if (idx === index) {
@@ -73,16 +63,12 @@ class SlideStories {
   prev() {
     if (this.active > 0) {
       this.activeSlide(this.active - 1);
-    } else {
-      this.activeSlide(this.items.length - 1);
     }
   }
 
   next() {
     if (this.active < this.items.length - 1) {
       this.activeSlide(this.active + 1);
-    } else {
-      this.activeSlide(0);
     }
   }
 
@@ -91,14 +77,6 @@ class SlideStories {
     const prevBtn = this.slide.querySelector(".slide-prev");
     nextBtn.addEventListener("click", this.next.bind(this));
     prevBtn.addEventListener("click", this.prev.bind(this));
-
-    // Add a click event listener to the slide to track user interaction
-    this.slide.addEventListener("click", () => {
-      if (!this.isInteracted) {
-        this.isInteracted = true;
-        this.playVideo(); // Call playVideo() after user interaction
-      }
-    });
   }
 
   addThumbItem() {
@@ -108,22 +86,28 @@ class SlideStories {
     thumbItem.append(track);
     this.thumb.appendChild(thumbItem);
     this.thumbItems.push(thumbItem);
+
+    thumbItem.addEventListener("click", () => {
+      this.activeSlide(this.thumbItems.indexOf(thumbItem));
+    });
   }
 
   addThumbItems() {
     this.thumbItems = [];
-    this.items.forEach(() => this.addThumbItem());
+    this.items.forEach((item, index) => this.addThumbItem(index));
   }
 
   autoSlide() {
     clearTimeout(this.timeout);
     const activeItem = this.items[this.active];
+    const arr = [...this.items];
+    const isLastSlide = arr.indexOf(activeItem) === arr.length - 1;
 
     if (activeItem.tagName === "VIDEO" && activeItem.classList.contains("active")) {
-      this.timeout = setTimeout(this.next.bind(this), activeItem.duration * 1000);
-      this.animateThumb(activeItem.duration); // Call the function to animate the thumb
+      this.timeout = !isLastSlide && setTimeout(this.next.bind(this), activeItem.duration * 1000);
+      this.animateThumb(activeItem.duration);
     } else {
-      this.timeout = setTimeout(this.next.bind(this), 5000);
+      this.timeout = !isLastSlide && setTimeout(this.next.bind(this), 5000);
     }
   }
 
@@ -180,6 +164,24 @@ class SlideStories {
     this.addThumbItem();
   }
 
+  showLastSlideModal() {
+    const lastSlideIndex = this.items.length - 1;
+
+    if (this.active === lastSlideIndex) {
+      this.modal.classList.add("active");
+
+      const modalForm = this.modal.querySelector(".modal-form");
+
+      modalForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const modalInput = this.modal.querySelector("#modal-input");
+        const userInput = modalInput.value;
+        console.log("User input:", userInput);
+        this.modal.classList.remove("active");
+      });
+    }
+  }
+
   init() {
     this.next = this.next.bind(this);
     this.prev = this.prev.bind(this);
@@ -190,23 +192,26 @@ class SlideStories {
       {
         type: "image",
         src: "./assets/images/pexels-photo-799443.jpeg",
-        duration: 5,
       },
       {
         type: "image",
         src: "./assets/images/pexels-todd-trapani-1535162.jpg",
-        duration: 5,
       },
       {
         type: "video",
         src: "./assets/video/5922551.mp4",
-        duration: 5,
+      },
+      {
+        type: "video",
+        src: "./assets/video/133640 (720p).mp4",
       },
     ];
 
     stories.forEach((story) => this.appendStory(story));
-    this.addNavigation();
+
     this.activeSlide(0);
+
+    this.addNavigation();
   }
 }
 

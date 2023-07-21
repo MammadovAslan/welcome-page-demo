@@ -4,17 +4,45 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
+    <!-- Google fonts Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
+      rel="stylesheet"
+    />
+    <!-- ------------------ -->
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <!--  -->
     <link rel="stylesheet" href="style.css" />
+    <title>Fanzoone</title>
   </head>
   <body>
     <div data-slide="slide" class="slide">
       <div class="slide-items"></div>
-
+      <div class="modal">
+        <div class="modal-content">
+          <img src="./assets/icons/68a904eb-2f2a-4aa9-b2c1-586c32f961fa.png" alt="" />
+          <h1 class="modal-title">Интересно?</h1>
+          <p class="modal-text">Хочешь увидеть больше, присоединяйся!</p>
+        </div>
+        <form class="modal-form">
+          <input type="tel" id="modal-input" placeholder="+7 999 999 99 99" autocomplete="tel" />
+          <button id="modal-submit">Присоединяйся</button>
+        </form>
+      </div>
       <nav class="slide-nav">
         <div class="slide-thumb"></div>
-        <button class="slide-prev">Previous</button>
-        <button class="slide-next">Next</button>
+        <button class="slide-prev"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="slide-next"><i class="fa-solid fa-chevron-right"></i></button>
       </nav>
     </div>
     <script type="module" src="/main.js"></script>
