@@ -146,7 +146,9 @@ img {
 }
 
 /* -------------Modal-------------*/
-.modal {
+.modal,
+.success-modal,
+.error-modal {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -165,11 +167,19 @@ img {
   gap: 1rem;
 }
 
-.modal-content {
+.modal-content,
+.success-modal,
+.error-modal {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.success-modal,
+.error-modal {
+  padding: 1rem;
+  min-width: 12rem;
 }
 
 .modal-text {
