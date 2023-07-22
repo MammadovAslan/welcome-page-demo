@@ -6,10 +6,16 @@ class SlideStories {
     this.init();
     this.modal = this.slide.querySelector(".modal");
 
-    document.addEventListener("keydown", this.handleArrowKeys.bind(this));
+    this.touchStartX = 0;
+    this.touchStartY = 0;
+    this.touchEndX = 0;
+    this.touchEndY = 0;
+
     this.slide.addEventListener("touchstart", this.handleTouchStart.bind(this), false);
     this.slide.addEventListener("touchmove", this.handleTouchMove.bind(this), false);
     this.slide.addEventListener("touchend", this.handleTouchEnd.bind(this), false);
+
+    document.addEventListener("keydown", this.handleArrowKeys.bind(this));
     const buttons = this.slide.querySelectorAll("button");
     buttons.forEach((button) => {
       button.addEventListener("keydown", (event) => {
@@ -26,22 +32,22 @@ class SlideStories {
   }
 
   handleTouchMove(event) {
-    event.preventDefault(); // Prevent scrolling while swiping
+    event.preventDefault();
     this.touchEndX = event.touches[0].clientX;
     this.touchEndY = event.touches[0].clientY;
   }
 
   handleTouchEnd(event) {
-    // Calculate swipe direction and distance
     const deltaX = this.touchEndX - this.touchStartX;
     const deltaY = this.touchEndY - this.touchStartY;
 
-    // Check if horizontal swipe distance is larger than vertical swipe distance
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    const touchThreshold = 50;
+
+    if (Math.abs(deltaX) > touchThreshold && Math.abs(deltaX) > Math.abs(deltaY)) {
       if (deltaX > 0) {
-        this.prev(); // Swipe right, go to previous slide
+        this.prev();
       } else {
-        this.next(); // Swipe left, go to next slide
+        this.next();
       }
     }
   }
