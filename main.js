@@ -191,7 +191,8 @@ class SlideStories {
 
       videoElement.autoplay = true;
       videoElement.playsinline = true;
-      // videoElement.muted = 'muted';
+      videoElement.allowsInlineMediaPlayback = true;
+      videoElement.setAttribute("webkit-playsinline", "webkit-playsinline");
 
       videoElement.append(source);
       slideContainer.append(videoElement);
@@ -243,7 +244,7 @@ class SlideStories {
 
       // Check if event listeners are already added
       if (!modalForm.hasAttribute("data-event-listeners-added")) {
-        modalForm.setAttribute("data-event-listeners-added", "true"); // Mark that event listeners are added
+        modalForm.setAttribute("data-event-listeners-added", "true"); 
 
         modalForm.addEventListener("submit", (event) => {
           event.preventDefault();
