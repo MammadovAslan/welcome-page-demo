@@ -104,10 +104,6 @@ img {
   width: 50%;
 }
 
-.slide-nav button:hover {
-  opacity: 1;
-}
-
 .slide-nav button:last-child {
   justify-self: end;
 }
