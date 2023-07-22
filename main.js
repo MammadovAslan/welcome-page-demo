@@ -6,15 +6,15 @@ class SlideStories {
     this.init();
     this.modal = this.slide.querySelector(".modal");
 
-    this.touchStartX = 0;
-    this.touchStartY = 0;
-    this.touchEndX = 0;
-    this.touchEndY = 0;
+    this.isTouching = false;
 
     this.slide.addEventListener("touchstart", this.handleTouchStart.bind(this), false);
     this.slide.addEventListener("touchmove", this.handleTouchMove.bind(this), false);
     this.slide.addEventListener("touchend", this.handleTouchEnd.bind(this), false);
-
+    this.slide.addEventListener("touchstart", () => {
+      this.isTouching = true;
+      setTimeout(() => (this.isTouching = false), 500);
+    });
     document.addEventListener("keydown", this.handleArrowKeys.bind(this));
     const buttons = this.slide.querySelectorAll("button");
     buttons.forEach((button) => {
@@ -27,27 +27,33 @@ class SlideStories {
   }
 
   handleTouchStart(event) {
-    this.touchStartX = event.touches[0].clientX;
-    this.touchStartY = event.touches[0].clientY;
+    if (!this.isTouching) {
+      this.touchStartX = event.touches[0].clientX;
+      this.touchStartY = event.touches[0].clientY;
+    }
   }
 
   handleTouchMove(event) {
-    event.preventDefault();
-    this.touchEndX = event.touches[0].clientX;
-    this.touchEndY = event.touches[0].clientY;
+    if (!this.isTouching) {
+      event.preventDefault();
+      this.touchEndX = event.touches[0].clientX;
+      this.touchEndY = event.touches[0].clientY;
+    }
   }
 
   handleTouchEnd(event) {
-    const deltaX = this.touchEndX - this.touchStartX;
-    const deltaY = this.touchEndY - this.touchStartY;
+    if (!this.isTouching) {
+      const deltaX = this.touchEndX - this.touchStartX;
+      const deltaY = this.touchEndY - this.touchStartY;
 
-    const touchThreshold = 50;
+      const touchThreshold = 50;
 
-    if (Math.abs(deltaX) > touchThreshold && Math.abs(deltaX) > Math.abs(deltaY)) {
-      if (deltaX > 0) {
-        this.prev();
-      } else {
-        this.next();
+      if (Math.abs(deltaX) > touchThreshold && Math.abs(deltaX) > Math.abs(deltaY)) {
+        if (deltaX > 0) {
+          this.prev();
+        } else {
+          this.next();
+        }
       }
     }
   }
