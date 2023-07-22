@@ -13,7 +13,7 @@ class SlideStories {
     this.slide.addEventListener("touchend", this.handleTouchEnd.bind(this), false);
     this.slide.addEventListener("touchstart", () => {
       this.isTouching = true;
-      setTimeout(() => (this.isTouching = false), 500);
+      setTimeout(() => (this.isTouching = false), 100);
     });
     document.addEventListener("keydown", this.handleArrowKeys.bind(this));
     const buttons = this.slide.querySelectorAll("button");
