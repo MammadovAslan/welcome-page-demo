@@ -156,7 +156,7 @@ class SlideStories {
       this.animateThumb(activeItem.duration);
     } else {
       //in case of image it will stay active for 5s
-      this.timeout = !isLastSlide && setTimeout(this.next.bind(this), 5000);
+      this.timeout = !isLastSlide && setTimeout(this.next.bind(this), 500000);
     }
   }
 
@@ -188,19 +188,28 @@ class SlideStories {
       const videoElement = document.createElement("video");
       const source = document.createElement("source");
       source.src = story.src;
+      source.type = "video/mp4";
 
       videoElement.autoplay = true;
       videoElement.playsinline = true;
       videoElement.allowsInlineMediaPlayback = true;
-      videoElement.setAttribute("playsinline", "");
+      videoElement.setAttribute("playsinline", "true");
       videoElement.setAttribute("webkit-playsinline", "webkit-playsinline");
 
       videoElement.append(source);
       slideContainer.append(videoElement);
     }
-    const text = document.createElement("p");
+    const text = document.createElement("div");
     text.classList.add("slide-text");
-    text.innerHTML = story.text;
+
+    const contentText = document.createElement("p");
+    contentText.innerHTML = story.content;
+    const title = document.createElement("h3");
+    title.innerHTML = story.title;
+
+    text.appendChild(title);
+    text.append(contentText);
+
     slideContainer.append(text);
     slideItems.append(slideContainer);
 
@@ -208,8 +217,33 @@ class SlideStories {
     this.addThumbItem();
   }
 
-  closeModal(modal) {
-    modal.remove();
+  appendLastSlide(story) {
+    const slideItems = this.slide.querySelector(".slide-items");
+    const slideContainer = document.createElement("div");
+    slideContainer.classList.add("slide-container");
+
+    if (story.type === "image") {
+      const image = document.createElement("img");
+      image.src = story.src;
+      slideContainer.append(image);
+    } else if (story.type === "video") {
+      const video = document.createElement("video");
+      const source = document.createElement("source");
+      source.src = story.src;
+      video.append(source);
+
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      slideContainer.appendChild(canvas);
+
+      slideContainer.append(video);
+    }
+
+    slideItems.append(slideContainer);
+
+    this.items = this.slide.querySelectorAll(".slide-items > *");
+    this.addThumbItem();
   }
 
   //*shows modal window on last slide
@@ -223,17 +257,19 @@ class SlideStories {
       const successModal = this.createModalElement(
         "success-modal",
         `
-        <img src="./assets/icons/smile.png" alt="Cool" />
-        <h2>Поздравляем!</h2>
-        <p>Вы успешно присоединились к FANZOONE</p>
-        <a href="#" class="store-link">
+        <div class="info-modal-content">
+          <img src="./assets/icons/smile.png" alt="Cool" />
+          <h2>Поздравляем!</h2>
+          <p>Вы успешно присоединились к FANZOONE</p>
+            <a href="#" class="store-link">
           <img src="./assets/icons/google.png" alt="Cool" />
-        </a>
-        <a href="#" class="store-link">
-          <img src="./assets/icons/apple.png" alt="Cool" />
-        </a>
-        <button id="close-modal-btn">Закрыть</button>
-      `
+          </a>
+          <a href="#" class="store-link">
+            <img src="./assets/icons/apple.png" alt="Cool" />
+          </a>
+          <button id="close-modal-btn">Закрыть</button>
+        </div>
+        `
       );
 
       const errorModal = this.createModalElement(
@@ -267,7 +303,7 @@ class SlideStories {
               const closeModalButton = successModal.querySelector("#close-modal-btn");
 
               closeModalButton.addEventListener("click", () => {
-                this.closeModal(successModal);
+                successModal.remove();
               });
             }
           } catch (error) {
@@ -311,26 +347,38 @@ class SlideStories {
       {
         type: "image",
         src: "./assets/images/pexels-photo-799443.jpeg",
-        text: "",
+        title: "Title",
+        content: "Lorem ipsum dolor sit amet",
       },
       {
         type: "image",
         src: "./assets/images/pexels-todd-trapani-1535162.jpg",
-        text: "",
+        title: "Title",
+        content: "Lorem ipsum dolor sit amet",
       },
       {
         type: "video",
         src: "./assets/video/5922551.mp4",
-        text: "",
+        title: "Title",
+        content: "Lorem ipsum dolor sit amet",
       },
       {
         type: "video",
         src: "./assets/video/133640 (720p).mp4",
-        text: "",
+        title: "Title",
+        content: "Lorem ipsum dolor sit amet",
+      },
+      {
+        type: "video",
+        src: "./assets/video/production_id_4057150 (2160p).mp4",
+        title: "Title",
+        content: "Lorem ipsum dolor sit amet",
       },
     ];
 
     stories.forEach((story) => this.appendStory(story));
+
+    this.appendLastSlide(stories[stories.length - 1]);
 
     this.activeSlide(0);
 
