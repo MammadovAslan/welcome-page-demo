@@ -194,9 +194,8 @@ class SlideStories {
     this.addThumbItem();
   }
 
-  closeModal() {
-    const successModal = this.slide.querySelector(".success-modal");
-    successModal.remove();
+  closeModal(modal) {
+    modal.remove();
   }
 
   //*shows modal window on last slide
@@ -211,8 +210,8 @@ class SlideStories {
         "success-modal",
         `
         <img src="./assets/icons/smile.png" alt="Cool" />
-        <h2>Позлравляем!</h2>
-        <p>Вы успешно присоедилились к FANZOONE</p>
+        <h2>Поздравляем!</h2>
+        <p>Вы успешно присоединились к FANZOONE</p>
         <a href="#" class="store-link">
           <img src="./assets/icons/google.png" alt="Cool" />
         </a>
@@ -220,7 +219,6 @@ class SlideStories {
           <img src="./assets/icons/apple.png" alt="Cool" />
         </a>
         <button id="close-modal-btn">Закрыть</button>
-
       `
       );
 
@@ -231,39 +229,44 @@ class SlideStories {
       `
       );
 
-      modalForm.addEventListener("submit", (event) => {
-        event.preventDefault();
-        const modalInput = this.modal.querySelector("#modal-input");
-        const userInput = modalInput.value;
+      // Check if event listeners are already added
+      if (!modalForm.hasAttribute("data-event-listeners-added")) {
+        modalForm.setAttribute("data-event-listeners-added", "true"); // Mark that event listeners are added
 
-        try {
-          console.log("User input:", userInput);
-          const isValidNumber = this.validatePhoneNumber(userInput.replaceAll(" ", ""));
-          //check phone number validation
-          if (!isValidNumber) {
-            throw Error();
+        modalForm.addEventListener("submit", (event) => {
+          event.preventDefault();
+          const modalInput = this.modal.querySelector("#modal-input");
+          const userInput = modalInput.value;
+
+          try {
+            console.log("User input:", userInput);
+            const isValidNumber = this.validatePhoneNumber(userInput.replaceAll(" ", ""));
+            //check phone number validation
+            if (!isValidNumber) {
+              throw Error();
+            }
+
+            this.modal.classList.remove("active");
+            this.slide.appendChild(successModal);
+            const closeModalButton = successModal.querySelector("#close-modal-btn");
+
+            closeModalButton.addEventListener("click", () => {
+              this.closeModal(successModal);
+            });
+          } catch (error) {
+            // Show error modal
+            console.log(error);
+            this.modal.classList.remove("active");
+            this.slide.appendChild(errorModal);
+
+            setTimeout(() => {
+              errorModal.remove();
+              this.modal.classList.add("active");
+              modalForm.reset();
+            }, 2000);
           }
-
-          this.modal.classList.remove("active");
-          this.slide.appendChild(successModal);
-          const closeModalButton = successModal.querySelector("#close-modal-btn");
-          closeModalButton.addEventListener("click", () => {
-            console.log("run");
-            this.closeModal();
-          });
-        } catch (error) {
-          // Show error modal
-          console.log(error);
-          this.modal.classList.remove("active");
-          this.slide.appendChild(errorModal);
-
-          setTimeout(() => {
-            errorModal.remove();
-            this.modal.classList.add("active");
-            modalForm.reset();
-          }, 2000);
-        }
-      });
+        });
+      }
     }
   }
 
