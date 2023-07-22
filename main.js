@@ -10,6 +10,8 @@ class SlideStories {
     this.touchStartY = 0;
     this.touchEndX = 0;
     this.touchEndY = 0;
+    this.swipeThreshold = 100;
+    this.isSwiping = false;
 
     this.slide.addEventListener("touchstart", this.handleTouchStart.bind(this), false);
     this.slide.addEventListener("touchmove", this.handleTouchMove.bind(this), false);
@@ -37,18 +39,32 @@ class SlideStories {
     this.touchEndY = event.touches[0].clientY;
   }
 
+  handleTouchStart(event) {
+    this.touchStartX = event.touches[0].clientX;
+    this.touchStartY = event.touches[0].clientY;
+  }
+
+  handleTouchMove(event) {
+    event.preventDefault();
+    this.touchEndX = event.touches[0].clientX;
+    this.touchEndY = event.touches[0].clientY;
+  }
+
   handleTouchEnd(event) {
     const deltaX = this.touchEndX - this.touchStartX;
     const deltaY = this.touchEndY - this.touchStartY;
 
-    const touchThreshold = 50;
-
-    if (Math.abs(deltaX) > touchThreshold && Math.abs(deltaX) > Math.abs(deltaY)) {
+    if (Math.abs(deltaX) > this.swipeThreshold && Math.abs(deltaX) > Math.abs(deltaY)) {
       if (deltaX > 0) {
         this.prev();
       } else {
         this.next();
       }
+
+      this.isSwiping = true;
+      setTimeout(() => {
+        this.isSwiping = false;
+      }, 500); // Set a delay to allow time for the click event to be processed
     }
   }
 
