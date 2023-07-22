@@ -368,12 +368,12 @@ class SlideStories {
         title: "Title",
         content: "Lorem ipsum dolor sit amet",
       },
-      {
-        type: "video",
-        src: "./assets/video/production_id_4057150 (2160p).mp4",
-        title: "Title",
-        content: "Lorem ipsum dolor sit amet",
-      },
+      // {
+      //   type: "video",
+      //   src: "./assets/video/production_id_4057150 (2160p).mp4",
+      //   title: "Title",
+      //   content: "Lorem ipsum dolor sit amet",
+      // },
     ];
 
     stories.forEach((story) => this.appendStory(story));
