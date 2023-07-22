@@ -45,6 +45,7 @@ img {
 
 .slide-items {
   position: relative;
+  display: flex;
   grid-area: 1/1;
   overflow: hidden;
 }
@@ -211,6 +212,11 @@ img {
 
 .modal-form {
   display: flex;
+  flex-direction: column;
+}
+
+.modal-form > .input-container {
+  display: flex;
   gap: 0.2rem;
   padding: 0.6rem;
   border-radius: 5px;
@@ -250,6 +256,23 @@ img {
 
 .modal:not(.active) {
   display: none;
+}
+
+.error-message {
+  opacity: 0;
+  color: rgb(221, 216, 219);
+  font-weight: 500;
+  align-self: flex-start;
+  margin-left: 2rem;
+  position: relative;
+}
+
+.error-message:after {
+  content: "*";
+  position: absolute;
+  left: -10px;
+  font-size: 1.3rem;
+  color: red;
 }
 
 @keyframes slide-in {

@@ -36,8 +36,17 @@
           <p class="modal-text">Хочешь увидеть больше, присоединяйся!</p>
         </div>
         <form class="modal-form">
-          <input type="tel" id="modal-input" placeholder="+7 999 999 99 99" autocomplete="tel" />
-          <button id="modal-submit">Присоединяйся</button>
+          <p class="error-message">Неккорректный номер</p>
+          <div class="input-container">
+            <input
+              type="tel"
+              id="modal-input"
+              placeholder="+7 999 999 99 99"
+              autocomplete="tel"
+              required
+            />
+            <button id="modal-submit">Присоединяйся</button>
+          </div>
         </form>
       </div>
 

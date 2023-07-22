@@ -5,7 +5,7 @@ class SlideStories {
     this.thumb = this.slide.querySelector(".slide-thumb");
     this.init();
     this.modal = this.slide.querySelector(".modal");
-
+    this.isRegistered = false;
     this.isTouching = false;
 
     this.slide.addEventListener("touchstart", this.handleTouchStart.bind(this), false);
@@ -214,7 +214,7 @@ class SlideStories {
   showLastSlideModal() {
     const lastSlideIndex = this.items.length - 1;
 
-    if (this.active === lastSlideIndex) {
+    if (this.active === lastSlideIndex && !this.isRegistered) {
       this.modal.classList.add("active");
 
       const modalForm = this.modal.querySelector(".modal-form");
@@ -247,6 +247,8 @@ class SlideStories {
 
         modalForm.addEventListener("submit", (event) => {
           event.preventDefault();
+          const errorMessage = modalForm.querySelector(".error-message");
+
           const modalInput = this.modal.querySelector("#modal-input");
           const userInput = modalInput.value;
 
@@ -255,16 +257,17 @@ class SlideStories {
             const isValidNumber = this.validatePhoneNumber(userInput.replaceAll(" ", ""));
             //check phone number validation
             if (!isValidNumber) {
-              throw Error();
+              errorMessage.style.opacity = 1;
+            } else {
+              this.modal.classList.remove("active");
+              this.slide.appendChild(successModal);
+              this.isRegistered = true;
+              const closeModalButton = successModal.querySelector("#close-modal-btn");
+
+              closeModalButton.addEventListener("click", () => {
+                this.closeModal(successModal);
+              });
             }
-
-            this.modal.classList.remove("active");
-            this.slide.appendChild(successModal);
-            const closeModalButton = successModal.querySelector("#close-modal-btn");
-
-            closeModalButton.addEventListener("click", () => {
-              this.closeModal(successModal);
-            });
           } catch (error) {
             // Show error modal
             console.log(error);
