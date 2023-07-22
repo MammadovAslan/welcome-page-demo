@@ -192,6 +192,7 @@ class SlideStories {
       videoElement.autoplay = true;
       videoElement.playsinline = true;
       videoElement.allowsInlineMediaPlayback = true;
+      videoElement.setAttribute("playsinline", "");
       videoElement.setAttribute("webkit-playsinline", "webkit-playsinline");
 
       videoElement.append(source);
@@ -244,7 +245,7 @@ class SlideStories {
 
       // Check if event listeners are already added
       if (!modalForm.hasAttribute("data-event-listeners-added")) {
-        modalForm.setAttribute("data-event-listeners-added", "true"); 
+        modalForm.setAttribute("data-event-listeners-added", "true");
 
         modalForm.addEventListener("submit", (event) => {
           event.preventDefault();
@@ -310,22 +311,22 @@ class SlideStories {
       {
         type: "image",
         src: "./assets/images/pexels-photo-799443.jpeg",
-        text: "Lorem ipsum sacramentum noto narum nefarius",
+        text: "",
       },
       {
         type: "image",
         src: "./assets/images/pexels-todd-trapani-1535162.jpg",
-        text: "Lorem ipsum sacramentum noto narum nefarius",
+        text: "",
       },
       {
         type: "video",
         src: "./assets/video/5922551.mp4",
-        text: "Lorem ipsum sacramentum noto narum nefarius",
+        text: "",
       },
       {
         type: "video",
         src: "./assets/video/133640 (720p).mp4",
-        text: "Lorem ipsum sacramentum noto narum nefarius",
+        text: "",
       },
     ];
 
