@@ -196,9 +196,7 @@ class SlideStories {
 
   closeModal() {
     const successModal = this.slide.querySelector(".success-modal");
-    if (successModal) {
-      successModal.remove();
-    }
+    successModal.remove();
   }
 
   //*shows modal window on last slide
@@ -240,9 +238,9 @@ class SlideStories {
 
         try {
           console.log("User input:", userInput);
-
-          //!use this code to test error handling on submit
-          if (userInput.length < 8) {
+          const isValidNumber = this.validatePhoneNumber(userInput.replaceAll(" ", ""));
+          //check phone number validation
+          if (!isValidNumber) {
             throw Error();
           }
 
@@ -250,11 +248,12 @@ class SlideStories {
           this.slide.appendChild(successModal);
           const closeModalButton = successModal.querySelector("#close-modal-btn");
           closeModalButton.addEventListener("click", () => {
+            console.log("run");
             this.closeModal();
           });
-          // this.modal.classList.remove("active");
         } catch (error) {
           // Show error modal
+          console.log(error);
           this.modal.classList.remove("active");
           this.slide.appendChild(errorModal);
 
@@ -266,6 +265,12 @@ class SlideStories {
         }
       });
     }
+  }
+
+  validatePhoneNumber(string) {
+    const regEx = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
+
+    return regEx.test(string);
   }
 
   createModalElement(className, innerHTML) {
