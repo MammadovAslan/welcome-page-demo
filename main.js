@@ -87,6 +87,8 @@ class SlideStories {
         if (child.tagName === "VIDEO") {
           child.autoplay = true;
           child.currentTime = 0;
+          child.playsinLine = true;
+          child.muted = true;
           child.play().catch((error) => {
             console.log("Autoplay failed:", error);
           });
@@ -156,7 +158,7 @@ class SlideStories {
       this.animateThumb(activeItem.duration);
     } else {
       //in case of image it will stay active for 5s
-      this.timeout = !isLastSlide && setTimeout(this.next.bind(this), 500000);
+      this.timeout = !isLastSlide && setTimeout(this.next.bind(this), 5000);
     }
   }
 
@@ -190,11 +192,9 @@ class SlideStories {
       source.src = story.src;
       source.type = "video/mp4";
 
-      videoElement.autoplay = true;
-      videoElement.playsinline = true;
+      // videoElement.autoplay = true;
       videoElement.allowsInlineMediaPlayback = true;
       videoElement.setAttribute("playsinline", "true");
-      videoElement.setAttribute("webkit-playsinline", "webkit-playsinline");
 
       videoElement.append(source);
       slideContainer.append(videoElement);
