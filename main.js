@@ -102,6 +102,7 @@ class SlideStories {
     });
     this.thumbItems.forEach((item, idx) => {
       item.classList.toggle("active", idx === index);
+      item.classList.toggle("seen", idx < index);
     });
     this.autoSlide();
   }
@@ -132,10 +133,13 @@ class SlideStories {
     const track = document.createElement("span");
     track.classList.add("track");
     thumbItem.append(track);
+
+    // Assign an index-related class to each thumb item
+
     this.thumb.appendChild(thumbItem);
     this.thumbItems.push(thumbItem);
 
-    //switch slide by clicking on thumb
+    // switch slide by clicking on thumb
     thumbItem.addEventListener("click", () => {
       this.activeSlide(this.thumbItems.indexOf(thumbItem));
     });
@@ -143,7 +147,7 @@ class SlideStories {
 
   addThumbItems() {
     this.thumbItems = [];
-    this.items.forEach((item, index) => this.addThumbItem(index));
+    this.items.forEach((item, index) => this.addThumbItem());
   }
 
   autoSlide() {
@@ -158,6 +162,7 @@ class SlideStories {
       this.animateThumb(activeItem.duration);
     } else {
       //in case of image it will stay active for 5s
+      this.animateThumb("5");
       this.timeout = !isLastSlide && setTimeout(this.next.bind(this), 500000);
     }
   }

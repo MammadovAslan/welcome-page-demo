@@ -133,7 +133,7 @@ img {
 .slide-thumb > span {
   flex: 1;
   display: block;
-  height: 3px;
+  height: 4px;
   background: #afafaf;
   margin: 3px;
   cursor: pointer;
@@ -141,6 +141,10 @@ img {
   border-radius: 3px;
   z-index: 10000;
   overflow: hidden;
+}
+
+.slide-thumb .seen {
+  background-color: #fff;
 }
 
 .slide-thumb > span.done > .track {
@@ -161,7 +165,6 @@ img {
   animation-name: thumb;
   animation-fill-mode: forwards;
   animation-timing-function: linear;
-  animation-duration: 5s;
 }
 
 @keyframes thumb {
@@ -188,6 +191,7 @@ img {
   transform: translate(-50%, -50%);
   z-index: 9999;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
   gap: 1rem;
 }
