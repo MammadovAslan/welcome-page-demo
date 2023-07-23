@@ -158,7 +158,7 @@ class SlideStories {
       this.animateThumb(activeItem.duration);
     } else {
       //in case of image it will stay active for 5s
-      this.timeout = !isLastSlide && setTimeout(this.next.bind(this), 5000);
+      this.timeout = !isLastSlide && setTimeout(this.next.bind(this), 500000);
     }
   }
 
