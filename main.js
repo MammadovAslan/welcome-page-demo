@@ -13,7 +13,7 @@ class SlideStories {
     this.slide.addEventListener("touchend", this.handleTouchEnd.bind(this), false);
     this.slide.addEventListener("touchstart", () => {
       this.isTouching = true;
-      setTimeout(() => (this.isTouching = false), 200);
+      setTimeout(() => (this.isTouching = false), 150);
     });
     document.addEventListener("keydown", this.handleArrowKeys.bind(this));
     const buttons = this.slide.querySelectorAll("button");
@@ -121,7 +121,6 @@ class SlideStories {
 
   prev() {
     if (this.active > 0) {
-      console.log("run");
       this.activeSlide(this.active - 1);
     }
   }
