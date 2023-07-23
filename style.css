@@ -178,7 +178,8 @@ img {
 /* -------------Modal-------------*/
 .modal,
 .success-modal,
-.error-modal {
+.error-modal,
+.code-modal {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -208,7 +209,9 @@ img {
   padding: 0 1rem;
 }
 
-.info-modal-content {
+.info-modal-content,
+.code-form,
+.error-modal-content {
   background-color: #fff;
   max-width: 90%;
   color: #111;
@@ -275,6 +278,55 @@ img {
   display: none;
 }
 
+.code-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+}
+
+.code-form input {
+  width: 50px;
+  caret-color: transparent;
+  text-align: center;
+  font-size: 3rem;
+  aspect-ratio: 1/1;
+  border: none;
+  font-weight: bold;
+}
+
+.code-inputs {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.code-inputs input {
+  /* border: 1px solid green; */
+  transition: 0.2s ease;
+}
+.code-inputs input:focus {
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.code-form #modal-submit {
+  align-self: stretch;
+}
+
+.error-modal .error-modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5rem;
+}
+
 .error-message {
   opacity: 0;
   color: rgb(221, 216, 219);
@@ -289,6 +341,36 @@ img {
   position: absolute;
   left: -10px;
   font-size: 1.3rem;
+  color: red;
+}
+
+.call-button {
+  border: none;
+  outline: none;
+  cursor: pointer;
+  background-color: rgba(47, 128, 237, 1);
+  align-self: stretch;
+  color: #fff;
+  padding: 1rem 0;
+  font-weight: 500;
+  border-radius: 12px;
+  transition: 0.2s ease;
+}
+
+.call-button:active {
+  transform: scale(0.95);
+}
+
+.timer {
+  display: inline-block;
+  width: 20px;
+}
+
+.hide {
+  display: none;
+}
+
+.wrong-code {
   color: red;
 }
 

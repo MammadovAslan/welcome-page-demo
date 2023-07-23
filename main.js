@@ -5,8 +5,10 @@ class SlideStories {
     this.thumb = this.slide.querySelector(".slide-thumb");
     this.init();
     this.modal = this.slide.querySelector(".modal");
+
     this.isRegistered = false;
     this.isTouching = false;
+    this.submitDelayed = false;
 
     this.slide.addEventListener("touchstart", this.handleTouchStart.bind(this), false);
     this.slide.addEventListener("touchmove", this.handleTouchMove.bind(this), false);
@@ -272,6 +274,26 @@ class SlideStories {
       this.modal.classList.add("active");
 
       const modalForm = this.modal.querySelector(".modal-form");
+      const codeModal = this.createModalElement(
+        "code-modal",
+        `
+        <form class="code-form">
+        <img src="./assets/icons/smile.png" alt="Cool" />
+          <h2>Подтвердите код</h2>
+          <p>Вам поступит звонок-сброс с уникального номера.
+          Введите последние 4 цифры этого номера
+          </p>
+          <div class='code-inputs'>
+            <input type="text" maxlength="1" / placeholder=".">
+            <input type="text" maxlength="1" / placeholder=".">
+            <input type="text" maxlength="1" / placeholder=".">
+            <input type="text" maxlength="1" / placeholder=".">
+          </div>
+          <button id="modal-submit">Отправить</button>
+        </form>
+      `
+      );
+
       const successModal = this.createModalElement(
         "success-modal",
         `
@@ -293,7 +315,11 @@ class SlideStories {
       const errorModal = this.createModalElement(
         "error-modal",
         `
-        <p>Упс! что-то пошло не так :(</p>
+        <div class="error-modal-content">
+        <img src="./assets/icons/sadsmile.svg" alt="Cool" />
+          <h2>О-оу, что-то не так!</h2>
+          <p>Проверьте номер телефона и повторите попытку</p>
+        </div>
       `
       );
 
@@ -312,16 +338,81 @@ class SlideStories {
             console.log("User input:", userInput);
             const isValidNumber = this.validatePhoneNumber(userInput.replaceAll(" ", ""));
             //check phone number validation
+
+            if (userInput === "1111") {
+              throw new Error("global error test");
+            }
+
             if (!isValidNumber) {
               errorMessage.style.opacity = 1;
             } else {
               this.modal.classList.remove("active");
-              this.slide.appendChild(successModal);
-              this.isRegistered = true;
-              const closeModalButton = successModal.querySelector("#close-modal-btn");
+              this.slide.appendChild(codeModal);
 
-              closeModalButton.addEventListener("click", () => {
-                successModal.remove();
+              const inputs = codeModal.querySelectorAll("input");
+              const codeForm = codeModal.querySelector(".code-form");
+
+              //code modal 4 digit inputs
+              inputs.forEach((input, key) => {
+                if (key === 0) input.focus();
+                input.addEventListener("keyup", function (e) {
+                  if (e.key === "Backspace") {
+                    input.value = "";
+                    inputs[key - 1] && inputs[key - 1].focus();
+                  }
+
+                  if (input.value.replace(/[^\d.-]+/g, "")) {
+                    input.value = input.value.replace(/[^\d.-]+/g, "");
+
+                    key !== 3 && inputs[key + 1].focus();
+                  } else {
+                    input.value = "";
+                  }
+                });
+              });
+
+              //submiting user 4 digit code
+              codeForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+
+                const userCode = [...inputs].reduce((acc, cur) => {
+                  return acc + cur.value;
+                }, "");
+
+                console.log(userCode);
+
+                if (!this.submitDelayed) {
+                  try {
+                    if (userCode === "1111") {
+                      const submitButton = codeForm.querySelector("#modal-submit");
+                      submitButton.classList.add("hide");
+                      inputs.forEach((input) => {
+                        input.classList.add("wrong-code");
+                      });
+                      this.submitDelayed = true;
+                      const timer = this.createTimer(2 * 60 * 1000, () => {
+                        const makeNewCallButton = this.recallButton();
+                        codeForm.append(makeNewCallButton);
+                        this.submitDelayed = false;
+                        timer.remove();
+                      });
+                      codeForm.append(timer);
+                      throw new Error("1111 is error test value");
+                    }
+
+                    codeModal.remove();
+                    this.slide.appendChild(successModal);
+
+                    this.isRegistered = true;
+                    const closeModalButton = successModal.querySelector("#close-modal-btn");
+
+                    closeModalButton.addEventListener("click", () => {
+                      successModal.remove();
+                    });
+
+                    //wrong code must be handled here
+                  } catch (error) {}
+                }
               });
             }
           } catch (error) {
@@ -334,11 +425,68 @@ class SlideStories {
               errorModal.remove();
               this.modal.classList.add("active");
               modalForm.reset();
-            }, 2000);
+            }, 3000);
           }
         });
       }
     }
+  }
+
+  makeCall() {
+    //send new 4 digit code to user
+    const codeModal = document.querySelector(".code-modal");
+    const submitButton = codeModal.querySelector("#modal-submit");
+    const inputs = codeModal.querySelectorAll("input");
+    const callButton = codeModal.querySelector(".call-button");
+    submitButton.classList.remove("hide");
+    inputs.forEach((input) => {
+      input.classList.remove("wrong-code");
+    });
+    callButton.remove();
+    console.log("Bot will call soon");
+  }
+
+  recallButton() {
+    const button = document.createElement("button");
+    button.classList.add("call-button");
+    button.setAttribute("type", "button");
+    button.innerHTML = "Позвонить повторно";
+    button.addEventListener("click", this.makeCall.bind(this));
+
+    return button;
+  }
+
+  createTimer(milliseconds, onTimerFinish) {
+    const timerContainer = document.createElement("div");
+    const timerText = document.createElement("div");
+    timerContainer.appendChild(timerText);
+
+    // Function to format time as mm:ss
+    function formatTime(milliseconds) {
+      const minutes = Math.floor(milliseconds / 60000);
+      const seconds = ((milliseconds % 60000) / 1000).toFixed(0);
+      return `Робот позвонит в течение <span class="timer"> ${String(minutes).padStart(
+        2,
+        "0"
+      )}:${String(seconds).padStart(2, "0")}</span>`;
+    }
+
+    let remainingTime = milliseconds;
+    timerText.innerHTML = formatTime(remainingTime);
+
+    const timerInterval = setInterval(() => {
+      remainingTime -= 1000;
+
+      if (remainingTime >= 0) {
+        timerText.innerHTML = formatTime(remainingTime);
+      } else {
+        clearInterval(timerInterval);
+        timerContainer.style.display = "none";
+        onTimerFinish(); // Call the callback function when the timer finishes
+      }
+    }, 100);
+
+    return timerContainer;
   }
 
   validatePhoneNumber(string) {
