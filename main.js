@@ -13,7 +13,7 @@ class SlideStories {
     this.slide.addEventListener("touchend", this.handleTouchEnd.bind(this), false);
     this.slide.addEventListener("touchstart", () => {
       this.isTouching = true;
-      setTimeout(() => (this.isTouching = false), 100);
+      setTimeout(() => (this.isTouching = false), 200);
     });
     document.addEventListener("keydown", this.handleArrowKeys.bind(this));
     const buttons = this.slide.querySelectorAll("button");
@@ -71,11 +71,11 @@ class SlideStories {
   activeSlide(index) {
     this.active = index;
     const isLastSlide = index === this.items.length - 1;
-    //shows modal on last slide
+    //shows modal on the last slide
 
     if (this.modal && this.modal.classList.contains("active")) {
       this.modal.classList.remove("active");
-      //remove modal if user swipes from last slide backwards
+      //remove modal if the user swipes from the last slide backward
     }
 
     isLastSlide && this.showLastSlideModal();
@@ -85,13 +85,24 @@ class SlideStories {
       const child = item.firstChild;
       if (idx === index) {
         if (child.tagName === "VIDEO") {
+          if (!child.paused) {
+            // If the video is already playing, do nothing
+            return;
+          }
           child.autoplay = true;
           child.currentTime = 0;
-          child.playsinLine = true;
+          child.playsInline = true;
           child.muted = true;
-          child.play().catch((error) => {
-            console.log("Autoplay failed:", error);
-          });
+          const playPromise = child.play();
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                // Autoplay started successfully
+              })
+              .catch((error) => {
+                // Autoplay failed, but this catch block will handle it, so no need to console log it again
+              });
+          }
         }
       } else {
         if (child.tagName === "VIDEO") {
@@ -100,6 +111,7 @@ class SlideStories {
         }
       }
     });
+
     this.thumbItems.forEach((item, idx) => {
       item.classList.toggle("active", idx === index);
       item.classList.toggle("seen", idx < index);
@@ -109,6 +121,7 @@ class SlideStories {
 
   prev() {
     if (this.active > 0) {
+      console.log("run");
       this.activeSlide(this.active - 1);
     }
   }
@@ -162,8 +175,9 @@ class SlideStories {
       this.animateThumb(activeItem.duration);
     } else {
       //in case of image it will stay active for 5s
-      this.animateThumb("5");
-      this.timeout = !isLastSlide && setTimeout(this.next.bind(this), 500000);
+      const duration = 5;
+      this.animateThumb(duration);
+      this.timeout = !isLastSlide && setTimeout(this.next.bind(this), duration * 1000);
     }
   }
 
@@ -175,7 +189,7 @@ class SlideStories {
       track.style.animationDuration = `${duration}s`;
 
       setTimeout(() => {
-        track.style.animationDuration = "";
+        // track.style.animationDuration = "";
       }, duration * 1000);
     }
   }

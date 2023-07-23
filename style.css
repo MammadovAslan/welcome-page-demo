@@ -109,6 +109,8 @@ img {
 }
 
 .slide-nav button {
+  position: relative;
+  z-index: 100000;
   -webkit-appearance: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   opacity: 0;
@@ -189,7 +191,6 @@ img {
   left: 50%;
   top: 52%;
   transform: translate(-50%, -50%);
-  z-index: 9999;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   background-color: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
