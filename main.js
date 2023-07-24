@@ -441,6 +441,7 @@ class SlideStories {
     submitButton.classList.remove("hide");
     inputs.forEach((input) => {
       input.classList.remove("wrong-code");
+      input.value = "";
     });
     callButton.remove();
     console.log("Bot will call soon");
@@ -512,13 +513,13 @@ class SlideStories {
     const stories = [
       {
         type: "image",
-        src: "./assets/images/pexels-photo-799443.jpeg",
+        src: "./assets/images/pexels-photo-799443.avif",
         title: "Title",
         content: "Lorem ipsum dolor sit amet",
       },
       {
         type: "image",
-        src: "./assets/images/pexels-todd-trapani-1535162.jpg",
+        src: "./assets/images/pexels-todd-trapani-1535162.avif",
         title: "Title",
         content: "Lorem ipsum dolor sit amet",
       },
@@ -530,16 +531,10 @@ class SlideStories {
       },
       {
         type: "video",
-        src: "./assets/video/133640 (720p).mp4",
+        src: "./assets/video/133640-(720p).mp4",
         title: "Title",
         content: "Lorem ipsum dolor sit amet",
       },
-      // {
-      //   type: "video",
-      //   src: "./assets/video/production_id_4057150 (2160p).mp4",
-      //   title: "Title",
-      //   content: "Lorem ipsum dolor sit amet",
-      // },
     ];
 
     stories.forEach((story) => this.appendStory(story));
