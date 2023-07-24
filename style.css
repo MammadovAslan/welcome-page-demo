@@ -50,6 +50,7 @@ img {
   justify-content: center;
   grid-area: 1/1;
   overflow: hidden;
+  width: 100%;
 }
 
 .slide-container {
@@ -93,6 +94,7 @@ img {
   top: 0;
   opacity: 0;
   pointer-events: none;
+  width: 100%;
 }
 
 .slide-items > .active {
@@ -164,10 +166,6 @@ img {
   height: inherit;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 3px;
-  transform: translateX(-100%);
-  animation-name: thumb;
-  animation-fill-mode: forwards;
-  animation-timing-function: linear;
 }
 
 @keyframes thumb {

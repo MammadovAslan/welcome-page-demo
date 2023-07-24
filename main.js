@@ -9,7 +9,7 @@ class SlideStories {
     this.isRegistered = false;
     this.isTouching = false;
     this.submitDelayed = false;
-
+    this.intervalID = null;
     this.slide.addEventListener("touchstart", this.handleTouchStart.bind(this), false);
     this.slide.addEventListener("touchmove", this.handleTouchMove.bind(this), false);
     this.slide.addEventListener("touchend", this.handleTouchEnd.bind(this), false);
@@ -101,9 +101,7 @@ class SlideStories {
               .then(() => {
                 // Autoplay started successfully
               })
-              .catch((error) => {
-                // Autoplay failed, but this catch block will handle it, so no need to console log it again
-              });
+              .catch((error) => {});
           }
         }
       } else {
@@ -173,9 +171,9 @@ class SlideStories {
     //if slide item is vedio, it will stay visible untill the end of the video
     if (activeItem.tagName === "VIDEO" && activeItem.parentElement.classList.contains("active")) {
       this.timeout = !isLastSlide && setTimeout(this.next.bind(this), activeItem.duration * 1000);
-      this.animateThumb(activeItem.duration);
+      this.animateThumb(activeItem);
     } else {
-      //in case of image it will stay active for 5s
+      //in case of image it will stay active for {duration} sesonds
       const duration = 5;
       this.animateThumb(duration);
       this.timeout = !isLastSlide && setTimeout(this.next.bind(this), duration * 1000);
@@ -183,15 +181,43 @@ class SlideStories {
   }
 
   //*animate thumb track according to slide media type
-  animateThumb(duration) {
+  animateThumb(value) {
     const thumbActive = this.thumb.querySelector(".active");
     const track = thumbActive.querySelector(".track");
-    if (thumbActive) {
-      track.style.animationDuration = `${duration}s`;
+    track.style.transform = "translateX(-100%)";
+    track.style.transition = "0s linear";
 
-      setTimeout(() => {
-        // track.style.animationDuration = "";
-      }, duration * 1000);
+    if (typeof value !== "number") {
+      value.load();
+    } else {
+      track.style.animationName = "";
+    }
+
+    if (thumbActive) {
+      clearInterval(this.intervalID);
+      this.intervalID = setInterval(() => {
+        //images are simply animated
+
+        if (typeof value === "number") {
+          track.style.animation = `thumb ${value - 0.5}s linear forwards`;
+        } else {
+          //video thumb track will be represent the actual playtime of the video,
+          //if it freeze in case of bad connection, the track will also stop
+          const duration = value.duration;
+          const buffered = value.buffered;
+          track.style.transition = "0.5s linear";
+
+          if (buffered.length > 0) {
+            const played = value.currentTime;
+            const percents = parseInt((played * 100) / duration);
+
+            track.style.transform = `translateX(${percents - 100}%)`;
+          } else {
+            track.style.transform = `translateX(-100%)`;
+            value.currentTime = 0;
+          }
+        }
+      }, 500);
     }
   }
 
@@ -352,24 +378,8 @@ class SlideStories {
               const inputs = codeModal.querySelectorAll("input");
               const codeForm = codeModal.querySelector(".code-form");
 
-              //code modal 4 digit inputs
-              inputs.forEach((input, key) => {
-                if (key === 0) input.focus();
-                input.addEventListener("keyup", function (e) {
-                  if (e.key === "Backspace") {
-                    input.value = "";
-                    inputs[key - 1] && inputs[key - 1].focus();
-                  }
-
-                  if (input.value.replace(/[^\d.-]+/g, "")) {
-                    input.value = input.value.replace(/[^\d.-]+/g, "");
-
-                    key !== 3 && inputs[key + 1].focus();
-                  } else {
-                    input.value = "";
-                  }
-                });
-              });
+              //4 code digit input logic
+              this.fillCodeInput(inputs);
 
               //submiting user 4 digit code
               codeForm.addEventListener("submit", (e) => {
@@ -379,57 +389,100 @@ class SlideStories {
                   return acc + cur.value;
                 }, "");
 
-                console.log(userCode);
-
                 if (!this.submitDelayed) {
                   try {
+                    //!test for wrong code
                     if (userCode === "1111") {
-                      const submitButton = codeForm.querySelector("#modal-submit");
-                      submitButton.classList.add("hide");
-                      inputs.forEach((input) => {
-                        input.classList.add("wrong-code");
-                      });
-                      this.submitDelayed = true;
-                      const timer = this.createTimer(2 * 60 * 1000, () => {
-                        const makeNewCallButton = this.recallButton();
-                        codeForm.append(makeNewCallButton);
-                        this.submitDelayed = false;
-                        timer.remove();
-                      });
-                      codeForm.append(timer);
-                      throw new Error("1111 is error test value");
+                      throw new Error("1111 - wrong code test");
                     }
 
-                    codeModal.remove();
-                    this.slide.appendChild(successModal);
+                    if (userCode.length === 4) {
+                      console.log(userCode);
+                      codeModal.remove();
+                      this.slide.appendChild(successModal);
 
-                    this.isRegistered = true;
-                    const closeModalButton = successModal.querySelector("#close-modal-btn");
+                      this.isRegistered = true;
+                      const closeModalButton = successModal.querySelector("#close-modal-btn");
 
-                    closeModalButton.addEventListener("click", () => {
-                      successModal.remove();
-                    });
-
-                    //wrong code must be handled here
-                  } catch (error) {}
+                      closeModalButton.addEventListener("click", () => {
+                        successModal.remove();
+                      });
+                    }
+                  } catch (error) {
+                    this.wrongCodeError(codeForm);
+                    console.error(error);
+                  }
                 }
               });
             }
           } catch (error) {
-            // Show error modal
-            console.log(error);
-            this.modal.classList.remove("active");
-            this.slide.appendChild(errorModal);
-
-            setTimeout(() => {
-              errorModal.remove();
-              this.modal.classList.add("active");
-              modalForm.reset();
-            }, 3000);
+            this.showGlobalErrorModal(error, errorModal);
           }
         });
       }
     }
+  }
+
+  showGlobalErrorModal(error, modal) {
+    console.error(error);
+    this.modal.classList.remove("active");
+    this.slide.appendChild(modal);
+
+    setTimeout(() => {
+      modal.remove();
+      this.modal.classList.add("active");
+      this.modal.querySelector(".modal-form").reset();
+    }, 3000);
+  }
+
+  wrongCodeError(parent) {
+    //set modal content to 'wrong code'
+    const submitButton = parent.querySelector("#modal-submit");
+    const inputs = parent.querySelectorAll("input");
+    submitButton.classList.add("hide");
+    const img = parent.querySelector("img");
+    const title = parent.querySelector("h2");
+    const message = parent.querySelector("p");
+
+    inputs.forEach((input) => {
+      input.classList.add("wrong-code");
+    });
+
+    message.innerHTML =
+      "Вы ввели неверный код. По истечению таймера вы сможете запросить код повторно";
+    img.src = "./assets/icons/sadsmile.svg";
+    title.innerHTML = "Неверный код";
+
+    this.submitDelayed = true;
+    const timer = this.createTimer(15 * 1000, () => {
+      const makeNewCallButton = this.recallButton();
+
+      parent.append(makeNewCallButton);
+      this.submitDelayed = false;
+      timer.remove();
+    });
+
+    parent.append(timer);
+  }
+
+  fillCodeInput(inputs) {
+    inputs.forEach((input, key) => {
+      if (key === 0) input.focus();
+      input.addEventListener("keyup", function (e) {
+        if (e.key === "Backspace") {
+          input.value = "";
+          inputs[key - 1] && inputs[key - 1].focus();
+        }
+
+        if (input.value.replace(/[^\d.-]+/g, "")) {
+          input.value = input.value.replace(/[^\d.-]+/g, "");
+
+          key !== 3 && inputs[key + 1].focus();
+        } else {
+          input.value = "";
+        }
+      });
+    });
   }
 
   makeCall() {
@@ -438,6 +491,17 @@ class SlideStories {
     const submitButton = codeModal.querySelector("#modal-submit");
     const inputs = codeModal.querySelectorAll("input");
     const callButton = codeModal.querySelector(".call-button");
+
+    //reseting modal content
+    const message = codeModal.querySelector("p");
+    const img = codeModal.querySelector("img");
+    const title = codeModal.querySelector("h2");
+
+    message.innerHTML =
+      "Вам поступит звонок-сброс с уникального номера. Введите последние 4 цифры этого номера";
+    img.src = "./assets/icons/smile.png";
+    title.innerHTML = "Подтвердите код";
+
     submitButton.classList.remove("hide");
     inputs.forEach((input) => {
       input.classList.remove("wrong-code");
@@ -466,7 +530,7 @@ class SlideStories {
     function formatTime(milliseconds) {
       const minutes = Math.floor(milliseconds / 60000);
       const seconds = ((milliseconds % 60000) / 1000).toFixed(0);
-      return `Робот позвонит в течение <span class="timer"> ${String(minutes).padStart(
+      return `До повторной попытки <span class="timer"> ${String(minutes).padStart(
         2,
         "0"
       )}:${String(seconds).padStart(2, "0")}</span>`;
@@ -485,15 +549,17 @@ class SlideStories {
         timerContainer.style.display = "none";
         onTimerFinish(); // Call the callback function when the timer finishes
       }
-    }, 100);
+    }, 1000);
 
     return timerContainer;
   }
 
   validatePhoneNumber(string) {
-    const regEx = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
+    const regEx = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
 
-    return regEx.test(string);
+    const isValidLength = string.length >= 8 && string.length <= 16;
+
+    return regEx.test(string) && isValidLength;
   }
 
   createModalElement(className, innerHTML) {
@@ -511,6 +577,12 @@ class SlideStories {
     this.addThumbItems();
 
     const stories = [
+      {
+        type: "image",
+        src: "./assets/images/pexels-photo-799443-crop.jpeg",
+        title: "Title",
+        content: "Lorem ipsum dolor sit amet",
+      },
       {
         type: "image",
         src: "./assets/images/pexels-photo-799443.avif",
