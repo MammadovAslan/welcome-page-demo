@@ -96,7 +96,7 @@ class SlideStories {
           child.currentTime = 0;
           child.playsInline = true;
           child.muted = true;
-
+          child.preload = "none";
           let isLoaded = false;
 
           const loadedMetadataHandler = () => {
@@ -108,6 +108,7 @@ class SlideStories {
               playPromise
                 .then(() => {
                   // Autoplay started successfully
+                  child.muted = true;
                 })
                 .catch((error) => {
                   console.log("Error during autoplay:", error);
