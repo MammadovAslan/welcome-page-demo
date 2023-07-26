@@ -10,6 +10,7 @@ class SlideStories {
     this.isTouching = false;
     this.submitDelayed = false;
     this.intervalID = null;
+    this.loading = false;
     this.slide.addEventListener("touchstart", this.handleTouchStart.bind(this), false);
     this.slide.addEventListener("touchmove", this.handleTouchMove.bind(this), false);
     this.slide.addEventListener("touchend", this.handleTouchEnd.bind(this), false);
@@ -73,11 +74,9 @@ class SlideStories {
   activeSlide(index) {
     this.active = index;
     const isLastSlide = index === this.items.length - 1;
-    //shows modal on the last slide
 
     if (this.modal && this.modal.classList.contains("active")) {
       this.modal.classList.remove("active");
-      //remove modal if the user swipes from the last slide backward
     }
 
     isLastSlide && this.showLastSlideModal();
@@ -85,24 +84,45 @@ class SlideStories {
     this.items.forEach((item, idx) => {
       item.classList.toggle("active", idx === index);
       const child = item.firstChild;
+
       if (idx === index) {
         if (child.tagName === "VIDEO") {
           if (!child.paused) {
             // If the video is already playing, do nothing
             return;
           }
+
           child.autoplay = true;
           child.currentTime = 0;
           child.playsInline = true;
           child.muted = true;
-          const playPromise = child.play();
-          if (playPromise !== undefined) {
-            playPromise
-              .then(() => {
-                // Autoplay started successfully
-              })
-              .catch((error) => {});
-          }
+
+          let isLoaded = false;
+
+          const loadedMetadataHandler = () => {
+            isLoaded = true;
+            child.removeEventListener("loadedmetadata", loadedMetadataHandler);
+
+            const playPromise = child.play();
+            if (playPromise !== undefined) {
+              playPromise
+                .then(() => {
+                  // Autoplay started successfully
+                })
+                .catch((error) => {
+                  console.log("Error during autoplay:", error);
+                });
+            }
+          };
+
+          child.addEventListener("loadedmetadata", loadedMetadataHandler);
+          setTimeout(() => {
+            if (!isLoaded) {
+              child.play().catch((error) => {
+                console.log("Error during autoplay:", error);
+              });
+            }
+          }, 100);
         }
       } else {
         if (child.tagName === "VIDEO") {
@@ -162,23 +182,36 @@ class SlideStories {
     this.items.forEach((item, index) => this.addThumbItem());
   }
 
-  autoSlide() {
+  async autoSlide() {
     clearTimeout(this.timeout);
     const activeItem = this.items[this.active].firstChild;
     const arr = [...this.items];
     const isLastSlide = arr.indexOf(activeItem) === arr.length - 1;
-
-    //if slide item is vedio, it will stay visible untill the end of the video
+  
     if (activeItem.tagName === "VIDEO" && activeItem.parentElement.classList.contains("active")) {
-      this.timeout = !isLastSlide && setTimeout(this.next.bind(this), activeItem.duration * 1000);
+      if (!activeItem.duration) {
+        await new Promise((resolve) => {
+          activeItem.addEventListener("loadedmetadata", resolve);
+        });
+      }
+  
+      try {
+        await activeItem.play();
+        this.timeout = !isLastSlide && setTimeout(this.next.bind(this), activeItem.duration * 1000);
+      } catch (error) {
+        this.items[this.active].addEventListener("click", () => {
+          this.activeSlide(this.active);
+        });
+      }
+  
       this.animateThumb(activeItem);
     } else {
-      //in case of image it will stay active for {duration} sesonds
       const duration = 5;
       this.animateThumb(duration);
       this.timeout = !isLastSlide && setTimeout(this.next.bind(this), duration * 1000);
     }
   }
+  
 
   //*animate thumb track according to slide media type
   animateThumb(value) {
@@ -292,6 +325,13 @@ class SlideStories {
     this.addThumbItem();
   }
 
+  muteButton() {
+    //<i class="fa-solid fa-volume-xmark"></i>
+    const icon = document.createElement("i");
+    icon.classList.add("fa-solid");
+    icon.classList.add("fa-volume-xmark");
+  }
+
   //*shows modal window on last slide
   showLastSlideModal() {
     const lastSlideIndex = this.items.length - 1;
@@ -353,17 +393,20 @@ class SlideStories {
       if (!modalForm.hasAttribute("data-event-listeners-added")) {
         modalForm.setAttribute("data-event-listeners-added", "true");
 
-        modalForm.addEventListener("submit", (event) => {
+        modalForm.addEventListener("submit", async (event) => {
           event.preventDefault();
           const errorMessage = modalForm.querySelector(".error-message");
-
+          const modalButton = modalForm.querySelector("#modal-submit");
           const modalInput = this.modal.querySelector("#modal-input");
           const userInput = modalInput.value;
 
           try {
+            this.loading = true;
             console.log("User input:", userInput);
             const isValidNumber = this.validatePhoneNumber(userInput.replaceAll(" ", ""));
             //check phone number validation
+
+            //! await for the response
 
             if (userInput === "1111") {
               throw new Error("global error test");
@@ -511,6 +554,19 @@ class SlideStories {
     console.log("Bot will call soon");
   }
 
+  loadingSpinner() {
+    const spinner = document.createElement("div");
+    const span = document.createElement("span");
+    spinner.classList.add("lds-dual-ring");
+    spinner.append(span);
+    document.body.append(spinner);
+  }
+
+  removeLoading() {
+    const spinner = document.querySelector(".lds-dual-ring");
+    spinner.remove();
+  }
+
   recallButton() {
     const button = document.createElement("button");
     button.classList.add("call-button");
@@ -578,8 +634,14 @@ class SlideStories {
 
     const stories = [
       {
-        type: "image",
-        src: "./assets/images/pexels-photo-799443-crop.jpeg",
+        type: "video",
+        src: "./assets/video/133640-(720p).mp4",
+        title: "Title",
+        content: "Lorem ipsum dolor sit amet",
+      },
+      {
+        type: "video",
+        src: "./assets/video/5922551.mp4",
         title: "Title",
         content: "Lorem ipsum dolor sit amet",
       },
