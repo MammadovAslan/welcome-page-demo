@@ -95,7 +95,7 @@ class SlideStories {
           child.autoplay = true;
           child.currentTime = 0;
           child.playsInline = true;
-          child.muted = true;
+          child.muted = false;
 
           let isLoaded = false;
 
@@ -187,14 +187,14 @@ class SlideStories {
     const activeItem = this.items[this.active].firstChild;
     const arr = [...this.items];
     const isLastSlide = arr.indexOf(activeItem) === arr.length - 1;
-  
+
     if (activeItem.tagName === "VIDEO" && activeItem.parentElement.classList.contains("active")) {
       if (!activeItem.duration) {
         await new Promise((resolve) => {
           activeItem.addEventListener("loadedmetadata", resolve);
         });
       }
-  
+
       try {
         await activeItem.play();
         this.timeout = !isLastSlide && setTimeout(this.next.bind(this), activeItem.duration * 1000);
@@ -203,7 +203,7 @@ class SlideStories {
           this.activeSlide(this.active);
         });
       }
-  
+
       this.animateThumb(activeItem);
     } else {
       const duration = 5;
@@ -211,7 +211,6 @@ class SlideStories {
       this.timeout = !isLastSlide && setTimeout(this.next.bind(this), duration * 1000);
     }
   }
-  
 
   //*animate thumb track according to slide media type
   animateThumb(value) {
@@ -635,7 +634,7 @@ class SlideStories {
     const stories = [
       {
         type: "video",
-        src: "./assets/video/133640-(720p).mp4",
+        src: "./assets/video/fanzoone-2_1.mp4",
         title: "Title",
         content: "Lorem ipsum dolor sit amet",
       },
