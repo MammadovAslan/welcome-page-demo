@@ -95,7 +95,7 @@ class SlideStories {
           child.autoplay = true;
           child.currentTime = 0;
           child.playsInline = true;
-          child.muted = false;
+          child.muted = true;
 
           let isLoaded = false;
 
