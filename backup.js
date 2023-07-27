@@ -109,7 +109,6 @@ class SlideStories {
               playPromise
                 .then(() => {
                   // Autoplay started successfully
-                  //   child.muted = false;
                 })
                 .catch((error) => {
                   console.log("Error during autoplay:", error);
