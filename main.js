@@ -225,10 +225,11 @@ class SlideStories {
     }
 
     if (thumbActive) {
+      //images are simply animated
       clearInterval(this.intervalID);
-      this.intervalID = setInterval(() => {
-        //images are simply animated
+      const delay = typeof value === "number" ? 100 : 2500;
 
+      this.intervalID = setInterval(() => {
         if (typeof value === "number") {
           track.style.animation = `thumb ${value - 0.5}s linear forwards`;
         } else {
@@ -248,7 +249,7 @@ class SlideStories {
             value.currentTime = 0;
           }
         }
-      }, 2500);
+      }, delay);
     }
   }
 
