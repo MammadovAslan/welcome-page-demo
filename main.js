@@ -96,7 +96,6 @@ class SlideStories {
           child.currentTime = 0;
           child.playsInline = true;
           child.muted = true;
-          child.preload = "none";
           let isLoaded = false;
 
           const loadedMetadataHandler = () => {
@@ -110,7 +109,7 @@ class SlideStories {
                   // Autoplay started successfully
                 })
                 .catch((error) => {
-                  console.log("Error during autoplay:", error);
+                  console.error("Error during autoplay:", error);
                 });
             }
           };
@@ -119,7 +118,7 @@ class SlideStories {
           setTimeout(() => {
             if (!isLoaded) {
               child.play().catch((error) => {
-                console.log("Error during autoplay:", error);
+                console.error("Error during autoplay:", error);
               });
             }
           }, 100);
