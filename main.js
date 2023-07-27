@@ -248,7 +248,7 @@ class SlideStories {
             value.currentTime = 0;
           }
         }
-      }, 500);
+      }, 2500);
     }
   }
 
