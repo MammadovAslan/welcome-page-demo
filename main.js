@@ -96,6 +96,7 @@ class SlideStories {
           child.currentTime = 0;
           child.playsInline = true;
           child.muted = true;
+          child.preload = "none";
           let isLoaded = false;
 
           const loadedMetadataHandler = () => {
