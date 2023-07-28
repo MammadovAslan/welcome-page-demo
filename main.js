@@ -92,12 +92,24 @@ class SlideStories {
             return;
           }
 
-          child.autoplay = true;
+          console.log(idx);
+
+          child.autoplay = idx !== 0;
           child.currentTime = 0;
           child.playsInline = true;
           child.muted = true;
           child.preload = "none";
           let isLoaded = false;
+
+          const playButton = document.querySelector(".play-button");
+
+          playButton.addEventListener("click", () => {
+            if (child.paused) {
+              child.play();
+            } else {
+              child.pause();
+            }
+          });
 
           const loadedMetadataHandler = () => {
             isLoaded = true;
@@ -197,7 +209,6 @@ class SlideStories {
 
       try {
         await activeItem.play();
-        this.timeout = !isLastSlide && setTimeout(this.next.bind(this), activeItem.duration * 1000);
       } catch (error) {
         this.items[this.active].addEventListener("click", () => {
           this.activeSlide(this.active);
@@ -228,7 +239,7 @@ class SlideStories {
     if (thumbActive) {
       //images are simply animated
       clearInterval(this.intervalID);
-      const delay = typeof value === "number" ? 100 : 2500;
+      const delay = typeof value === "number" ? 100 : 1000;
 
       this.intervalID = setInterval(() => {
         if (typeof value === "number") {
@@ -243,6 +254,8 @@ class SlideStories {
           if (buffered.length > 0) {
             const played = value.currentTime;
             const percents = parseInt((played * 100) / duration);
+
+            if (played === value.duration) this.next();
 
             track.style.transform = `translateX(${percents - 100}%)`;
           } else {

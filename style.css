@@ -74,7 +74,6 @@ img {
   flex-direction: column;
   gap: 1rem;
   padding: 2rem 0 8rem 2rem;
-
   background: linear-gradient(0deg, rgba(0, 0, 0, 9) 0%, rgba(255, 255, 255, 0) 100%);
 }
 
@@ -115,12 +114,30 @@ img {
   background: transparent;
   z-index: 500;
   border: none;
-  width: 50%;
+  width: 25%;
   height: 100%;
 }
 
 .slide-next {
   right: 0;
+}
+
+.play-button {
+  position: absolute;
+  width: 50px;
+  aspect-ratio: 1/1;
+  top: calc(50% - 50px);
+  right: calc(50% - 25px);
+  border: none;
+  outline: none;
+  background: none;
+  font-size: 5rem;
+  color: #11111180;
+  transition: 0.2s ease;
+}
+
+.play-button:active {
+  transform: scale(0.9);
 }
 
 .slide-nav button:last-child {
