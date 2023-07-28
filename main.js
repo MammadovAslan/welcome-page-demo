@@ -118,7 +118,7 @@ class SlideStories {
           child.playsInline = true;
           child.muted = true;
           child.preload = "none";
-          child.load();
+          // child.load();
         }
       }
     });
