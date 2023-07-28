@@ -115,6 +115,7 @@ img {
   z-index: 500;
   border: none;
   width: 25%;
+
   height: 100%;
 }
 
@@ -124,16 +125,31 @@ img {
 
 .play-button {
   position: absolute;
-  width: 50px;
-  aspect-ratio: 1/1;
-  top: calc(50% - 50px);
-  right: calc(50% - 25px);
+  width: 50%;
+  right: calc(25%);
   border: none;
   outline: none;
   background: none;
   font-size: 5rem;
   color: #11111180;
   transition: 0.2s ease;
+  z-index: 1000;
+  top: 0;
+  bottom: 0;
+}
+
+.fade {
+  animation-fill-mode: forwards;
+  animation: fade 0.5s ease;
+}
+
+@keyframes fade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 .play-button:active {

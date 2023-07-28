@@ -11,6 +11,7 @@ class SlideStories {
     this.submitDelayed = false;
     this.intervalID = null;
     this.loading = false;
+
     this.slide.addEventListener("touchstart", this.handleTouchStart.bind(this), false);
     this.slide.addEventListener("touchmove", this.handleTouchMove.bind(this), false);
     this.slide.addEventListener("touchend", this.handleTouchEnd.bind(this), false);
@@ -73,7 +74,32 @@ class SlideStories {
   //*set active slide
   activeSlide(index) {
     this.active = index;
+    const playButton = document.querySelector(".play-button");
+
+    const buttonClick = (video) => {
+      playButton.style.opacity = 0;
+
+      if (video.paused) {
+        if (video.currentTime === 0) {
+          video.load();
+          video.play();
+        } else {
+          video.play();
+        }
+      } else {
+        video.pause();
+      }
+    };
+
+    // Add event listener outside the forEach loop
+
     const isLastSlide = index === this.items.length - 1;
+
+    if (!isLastSlide) {
+      playButton.removeEventListener("click", this.buttonClickHandler);
+      this.buttonClickHandler = buttonClick.bind(null, this.items[index].firstChild);
+      playButton.addEventListener("click", this.buttonClickHandler);
+    }
 
     if (this.modal && this.modal.classList.contains("active")) {
       this.modal.classList.remove("active");
@@ -87,60 +113,12 @@ class SlideStories {
 
       if (idx === index) {
         if (child.tagName === "VIDEO") {
-          if (!child.paused) {
-            // If the video is already playing, do nothing
-            return;
-          }
-
-          console.log(idx);
-
-          // child.autoplay = idx !== 0;
+          child.autoplay = idx !== 0;
           child.currentTime = 0;
           child.playsInline = true;
           child.muted = true;
           child.preload = "none";
-          let isLoaded = false;
-
-          const playButton = document.querySelector(".play-button");
-
-          playButton.addEventListener("click", () => {
-            if (child.paused) {
-              child.load();
-              child.play();
-            } else {
-              child.pause();
-            }
-          });
-
-          const loadedMetadataHandler = () => {
-            isLoaded = true;
-            child.removeEventListener("loadedmetadata", loadedMetadataHandler);
-
-            const playPromise = child.play();
-            if (playPromise !== undefined) {
-              playPromise
-                .then(() => {
-                  // Autoplay started successfully
-                })
-                .catch((error) => {
-                  console.error("Error during autoplay:", error);
-                });
-            }
-          };
-
-          child.addEventListener("loadedmetadata", loadedMetadataHandler);
-          setTimeout(() => {
-            if (!isLoaded) {
-              child.play().catch((error) => {
-                console.error("Error during autoplay:", error);
-              });
-            }
-          }, 100);
-        }
-      } else {
-        if (child.tagName === "VIDEO") {
-          child.autoplay = false;
-          child.pause();
+          child.load();
         }
       }
     });
