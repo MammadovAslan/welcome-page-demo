@@ -94,7 +94,7 @@ class SlideStories {
 
           console.log(idx);
 
-          child.autoplay = idx !== 0;
+          // child.autoplay = idx !== 0;
           child.currentTime = 0;
           child.playsInline = true;
           child.muted = true;
@@ -105,6 +105,7 @@ class SlideStories {
 
           playButton.addEventListener("click", () => {
             if (child.paused) {
+              child.load();
               child.play();
             } else {
               child.pause();
